@@ -195,6 +195,26 @@ func UpdateRecipesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, recipe)
 }
 
+// swagger:operation DELETE /recipes/{id} recipes deleteRecipe
+//
+// Delete an existing recipe
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   description: ID of the recipe
+//   required: true
+//   type: string
+//
+// produces:
+// - application/json
+//
+// responses:
+//   '200':
+//     description: Successful operation
+//   '404':
+//     description: Invalid recipe ID
 func DeleteRecipesHandler(c *gin.Context) {
 	id := c.Param("id")
 	index := -1
