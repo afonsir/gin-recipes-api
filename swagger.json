@@ -22,6 +22,21 @@
   "basePath": "/",
   "paths": {
     "/recipes": {
+      "get": {
+        "description": "Returns list of recipes",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "listRecipes",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      },
       "post": {
         "description": "Create a new recipe",
         "produces": [
