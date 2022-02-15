@@ -20,5 +20,26 @@
   },
   "host": "localhost:8080",
   "basePath": "/",
-  "paths": {}
+  "paths": {
+    "/recipes": {
+      "post": {
+        "description": "Create a new recipe",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "createRecipe",
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "description": "Invalid input"
+          }
+        }
+      }
+    }
+  }
 }

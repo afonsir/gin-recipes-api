@@ -57,6 +57,19 @@ func main() {
 	router.Run()
 }
 
+// swagger:operation POST /recipes recipes createRecipe
+//
+// Create a new recipe
+//
+// ---
+// produces:
+// - application/json
+//
+// responses:
+//   '200':
+//     description: Successful operation
+//   '400':
+//     description: Invalid input
 func NewRecipeHandler(c *gin.Context) {
 	var recipe Recipe
 
