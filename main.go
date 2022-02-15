@@ -102,6 +102,24 @@ func ListRecipesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, recipes)
 }
 
+// swagger:operation GET /recipes/search recipes searchRecipes
+//
+// Search recipes by tag
+//
+// ---
+// parameters:
+// - name: tag
+//   in: query
+//   description: tag to filter by
+//   required: false
+//   type: string
+//
+// produces:
+// - application/json
+//
+// responses:
+//   '200':
+//     description: Successful operation
 func SearchRecipesHandler(c *gin.Context) {
 	tag := c.Query("tag")
 	listOfRecipes := make([]Recipe, 0)

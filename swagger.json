@@ -55,6 +55,31 @@
           }
         }
       }
+    },
+    "/recipes/search": {
+      "get": {
+        "description": "Search recipes by tag",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "searchRecipes",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "tag to filter by",
+            "name": "tag",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          }
+        }
+      }
     }
   }
 }
