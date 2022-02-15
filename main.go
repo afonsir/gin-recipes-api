@@ -141,6 +141,28 @@ func SearchRecipesHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, listOfRecipes)
 }
 
+// swagger:operation PUT /recipes/{id} recipes updateRecipe
+//
+// Update an existing recipe
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   description: ID of the recipe
+//   required: true
+//   type: string
+//
+// produces:
+// - application/json
+//
+// responses:
+//   '200':
+//     description: Successful operation
+//   '400':
+//     description: Invalid input
+//   '404':
+//     description: Invalid recipe ID
 func UpdateRecipesHandler(c *gin.Context) {
 	id := c.Param("id")
 
