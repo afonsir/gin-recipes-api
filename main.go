@@ -170,23 +170,26 @@ func ListRecipesHandler(c *gin.Context) {
 //     description: Successful operation
 func SearchRecipesHandler(c *gin.Context) {
 	tag := c.Query("tag")
-	listOfRecipes := make([]Recipe, 0)
+	cur, err := collection.Find(ctx, bson.M{"tags": tag})
 
-	for i := 0; i < len(recipes); i++ {
-		found := false
-
-		for _, t := range recipes[i].Tags {
-			if strings.EqualFold(t, tag) {
-				found = true
-			}
-		}
-
-		if found {
-			listOfRecipes = append(listOfRecipes, recipes[i])
-		}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
 	}
 
-	c.JSON(http.StatusOK, listOfRecipes)
+	defer cur.Close(ctx)
+
+	recipes := make([]Recipe, 0)
+
+	for cur.Next(ctx) {
+		var recipe Recipe
+		cur.Decode(&recipe)
+		recipes = append(recipes, recipe)
+	}
+
+	c.JSON(http.StatusOK, recipes)
 }
 
 // swagger:operation PUT /recipes/{id} recipes updateRecipe
