@@ -17,5 +17,24 @@ services:
       timeout: 10s
       retries: 5
 
+  redis:
+    image: redis:6.2
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./conf/redis.conf:/usr/local/etc/redis/redis.conf:ro
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  redis-gui:
+    image: redislabs/redisinsight:1.11.1
+    container_name: redis-gui
+    ports:
+      - 8001:8001
+
 volumes:
   mongodb-data:
