@@ -226,24 +226,35 @@ func UpdateRecipesHandler(c *gin.Context) {
 		return
 	}
 
-	index := -1
+	objectId, _ := primitive.ObjectIDFromHex(id)
 
-	for i := 0; i < len(recipes); i++ {
-		if recipes[i].ID == id {
-			index = i
-		}
-	}
+	result, err := collection.UpdateOne(ctx, bson.M{
+		"_id": objectId,
+	}, bson.D{primitive.E{Key: "$set", Value: bson.D{
+		primitive.E{Key: "name", Value: recipe.Name},
+		primitive.E{Key: "instructions", Value: recipe.Instructions},
+		primitive.E{Key: "ingredients", Value: recipe.Ingredients},
+		primitive.E{Key: "tags", Value: recipe.Tags},
+	}}})
 
-	if index == -1 {
+	if result.MatchedCount == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "Recipe not found",
 		})
 		return
 	}
 
-	recipes[index] = recipe
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
-	c.JSON(http.StatusOK, recipe)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Recipe has been updated",
+	})
 }
 
 // swagger:operation DELETE /recipes/{id} recipes deleteRecipe
