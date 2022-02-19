@@ -128,6 +128,25 @@ func NewRecipeHandler(c *gin.Context) {
 //   '200':
 //     description: Successful operation
 func ListRecipesHandler(c *gin.Context) {
+	cur, err := collection.Find(ctx, bson.M{})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	defer cur.Close(ctx)
+
+	recipes := make([]Recipe, 0)
+
+	for cur.Next(ctx) {
+		var recipe Recipe
+		cur.Decode(&recipe)
+		recipes = append(recipes, recipe)
+	}
+
 	c.JSON(http.StatusOK, recipes)
 }
 
