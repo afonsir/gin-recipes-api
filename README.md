@@ -23,5 +23,5 @@ swagger serve --flavor swagger ./swagger.json
 # Start App
 
 ```bash
-MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' MONGODB_DATABASE=demo go run main.go
+MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' MONGODB_DATABASE=demo go run *.go
 ```
