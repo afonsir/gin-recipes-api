@@ -25,3 +25,9 @@ swagger serve --flavor swagger ./swagger.json
 ```bash
 MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' MONGODB_DATABASE=demo go run *.go
 ```
+
+# Healthcheck
+
+```bash
+docker container inspect --format "{{json .State.Health }}" redis | jq '.Log[].Output'
+```
