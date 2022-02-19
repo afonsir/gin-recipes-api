@@ -279,22 +279,26 @@ func UpdateRecipesHandler(c *gin.Context) {
 //     description: Invalid recipe ID
 func DeleteRecipesHandler(c *gin.Context) {
 	id := c.Param("id")
-	index := -1
+	objectId, _ := primitive.ObjectIDFromHex(id)
 
-	for i := 0; i < len(recipes); i++ {
-		if recipes[i].ID == id {
-			index = i
-		}
-	}
+	result, err := collection.DeleteOne(ctx, bson.M{
+		"_id": objectId,
+	})
 
-	if index == -1 {
+	if result.DeletedCount == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "Recipe not found",
 		})
 		return
 	}
 
-	recipes = append(recipes[:index], recipes[index+1:]...)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Recipe has been deleted",
