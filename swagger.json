@@ -118,6 +118,33 @@
       }
     },
     "/recipes/{id}": {
+      "get": {
+        "description": "Get an existing recipe",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "getOneRecipe",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the recipe",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
       "put": {
         "description": "Update an existing recipe",
         "consumes": [
