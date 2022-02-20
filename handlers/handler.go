@@ -157,6 +157,46 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 	}
 }
 
+// swagger:operation GET /recipes/{id} recipes getOneRecipe
+//
+// Get an existing recipe
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   description: ID of the recipe
+//   required: true
+//   type: string
+//
+// produces:
+// - application/json
+//
+// responses:
+//   '200':
+//     description: Successful operation
+//   '404':
+//     description: Not found
+func (handler *RecipesHandler) GetOneRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+	objectId, _ := primitive.ObjectIDFromHex(id)
+
+	var recipe models.Recipe
+
+	result := handler.collection.FindOne(handler.ctx, bson.M{
+		"_id": objectId,
+	}).Decode(&recipe)
+
+	if result != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Recipe not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, recipe)
+}
+
 // swagger:operation GET /recipes/search recipes searchRecipes
 //
 // Search recipes by tag
