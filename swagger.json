@@ -34,11 +34,17 @@
         "responses": {
           "200": {
             "description": "Successful operation"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "post": {
         "description": "Create a new recipe",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
         ],
@@ -46,12 +52,39 @@
           "recipes"
         ],
         "operationId": "createRecipe",
+        "parameters": [
+          {
+            "description": "The recipe to create",
+            "name": "recipe",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ingredients": {
+                  "type": "string"
+                },
+                "instructions": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful operation"
           },
           "400": {
             "description": "Invalid input"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
@@ -77,13 +110,46 @@
         "responses": {
           "200": {
             "description": "Successful operation"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/recipes/{id}": {
+      "get": {
+        "description": "Get an existing recipe",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "recipes"
+        ],
+        "operationId": "getOneRecipe",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID of the recipe",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Not found"
+          }
+        }
+      },
       "put": {
         "description": "Update an existing recipe",
+        "consumes": [
+          "application/json"
+        ],
         "produces": [
           "application/json"
         ],
@@ -98,6 +164,28 @@
             "name": "id",
             "in": "path",
             "required": true
+          },
+          {
+            "description": "The recipe to update",
+            "name": "recipe",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "ingredients": {
+                  "type": "string"
+                },
+                "instructions": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "tags": {
+                  "type": "string"
+                }
+              }
+            }
           }
         ],
         "responses": {
@@ -108,7 +196,10 @@
             "description": "Invalid input"
           },
           "404": {
-            "description": "Invalid recipe ID"
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
@@ -135,7 +226,10 @@
             "description": "Successful operation"
           },
           "404": {
-            "description": "Invalid recipe ID"
+            "description": "Not found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }

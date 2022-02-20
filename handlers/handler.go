@@ -40,6 +40,25 @@ func NewRecipesHandler(
 // Create a new recipe
 //
 // ---
+// parameters:
+// - name: recipe
+//   in: body
+//   description: The recipe to create
+//   schema:
+//     type: object
+//     properties:
+//       name:
+//         type: string
+//       tags:
+//         type: string
+//       ingredients:
+//         type: string
+//       instructions:
+//         type: string
+//
+// consumes:
+// - application/json
+//
 // produces:
 // - application/json
 //
@@ -48,6 +67,8 @@ func NewRecipesHandler(
 //     description: Successful operation
 //   '400':
 //     description: Invalid input
+//   '500':
+//     description: Internal Server Error
 func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
 	var recipe models.Recipe
 
@@ -88,6 +109,8 @@ func (handler *RecipesHandler) NewRecipeHandler(c *gin.Context) {
 // responses:
 //   '200':
 //     description: Successful operation
+//   '500':
+//     description: Internal Server Error
 func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 	val, err := handler.redisClient.Get("recipes").Result()
 
@@ -134,6 +157,46 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 	}
 }
 
+// swagger:operation GET /recipes/{id} recipes getOneRecipe
+//
+// Get an existing recipe
+//
+// ---
+// parameters:
+// - name: id
+//   in: path
+//   description: ID of the recipe
+//   required: true
+//   type: string
+//
+// produces:
+// - application/json
+//
+// responses:
+//   '200':
+//     description: Successful operation
+//   '404':
+//     description: Not found
+func (handler *RecipesHandler) GetOneRecipeHandler(c *gin.Context) {
+	id := c.Param("id")
+	objectId, _ := primitive.ObjectIDFromHex(id)
+
+	var recipe models.Recipe
+
+	result := handler.collection.FindOne(handler.ctx, bson.M{
+		"_id": objectId,
+	}).Decode(&recipe)
+
+	if result != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "Recipe not found",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, recipe)
+}
+
 // swagger:operation GET /recipes/search recipes searchRecipes
 //
 // Search recipes by tag
@@ -152,6 +215,8 @@ func (handler *RecipesHandler) ListRecipesHandler(c *gin.Context) {
 // responses:
 //   '200':
 //     description: Successful operation
+//   '500':
+//     description: Internal Server Error
 func (handler *RecipesHandler) SearchRecipesHandler(c *gin.Context) {
 	tag := c.Query("tag")
 	cur, err := handler.collection.Find(handler.ctx, bson.M{"tags": tag})
@@ -187,6 +252,23 @@ func (handler *RecipesHandler) SearchRecipesHandler(c *gin.Context) {
 //   description: ID of the recipe
 //   required: true
 //   type: string
+// - name: recipe
+//   in: body
+//   description: The recipe to update
+//   schema:
+//     type: object
+//     properties:
+//       name:
+//         type: string
+//       tags:
+//         type: string
+//       ingredients:
+//         type: string
+//       instructions:
+//         type: string
+//
+// consumes:
+// - application/json
 //
 // produces:
 // - application/json
@@ -197,7 +279,9 @@ func (handler *RecipesHandler) SearchRecipesHandler(c *gin.Context) {
 //   '400':
 //     description: Invalid input
 //   '404':
-//     description: Invalid recipe ID
+//     description: Not found
+//   '500':
+//     description: Internal Server Error
 func (handler *RecipesHandler) UpdateRecipesHandler(c *gin.Context) {
 	id := c.Param("id")
 
@@ -263,7 +347,9 @@ func (handler *RecipesHandler) UpdateRecipesHandler(c *gin.Context) {
 //   '200':
 //     description: Successful operation
 //   '404':
-//     description: Invalid recipe ID
+//     description: Not found
+//   '500':
+//     description: Internal Server Error
 func (handler *RecipesHandler) DeleteRecipesHandler(c *gin.Context) {
 	id := c.Param("id")
 	objectId, _ := primitive.ObjectIDFromHex(id)
