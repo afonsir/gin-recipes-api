@@ -18,7 +18,7 @@
     },
     "version": "1.0.0"
   },
-  "host": "localhost:8080",
+  "host": "api.recipes.io:8080",
   "basePath": "/",
   "paths": {
     "/recipes": {
@@ -346,6 +346,13 @@
           }
         }
       }
+    }
+  },
+  "securityDefinitions": {
+    "api_key": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   }
 }

@@ -3,10 +3,16 @@
 // This is a sample recipes API. You can find out more about the API at https://github.com/afonsir/gin-recipes-api
 //
 // Schemes: http
-// Host: localhost:8080
+// Host: api.recipes.io:8080
 // BasePath: /
 // Version: 1.0.0
 // Contact: Afonso Costa <afonso@mail.com>
+//
+// SecurityDefinitions:
+//   api_key:
+//     type: apiKey
+//     name: Authorization
+//     in: header
 //
 // Consumes:
 // - application/json
