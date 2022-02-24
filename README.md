@@ -54,3 +54,17 @@ docker container inspect --format "{{json .State.Health }}" redis | jq '.Log[].O
 # -g file name (ex. with-cache.data or without-cache.data)
 ab -n 2000 -c 100 -g without-cache.data http://localhost:8080/recipes
 ```
+
+# Security
+
+- Generate self-signed certificate:
+
+```bash
+openssl req \
+  -x509 \
+  -nodes \
+  -days 365 \
+  -newkey rsa:2048 \
+  -keyout certs/localhost.key \
+  -out certs/localhost.crt
+```

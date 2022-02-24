@@ -90,5 +90,5 @@ func main() {
 	authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipesHandler)
 	authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipesHandler)
 
-	router.Run()
+	router.RunTLS(":4430", "certs/localhost.crt", "certs/localhost.key")
 }
