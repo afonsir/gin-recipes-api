@@ -3,12 +3,14 @@ module github.com/afonsir/gin-recipes-api
 go 1.17
 
 require (
+	github.com/auth0-community/go-auth0 v1.0.0
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/rs/xid v1.3.0
 	go.mongodb.org/mongo-driver v1.8.3
+	gopkg.in/square/go-jose.v2 v2.6.0
 )
 
 require (
