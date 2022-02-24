@@ -3,10 +3,16 @@
 // This is a sample recipes API. You can find out more about the API at https://github.com/afonsir/gin-recipes-api
 //
 // Schemes: http
-// Host: localhost:8080
+// Host: api.recipes.io:8080
 // BasePath: /
 // Version: 1.0.0
 // Contact: Afonso Costa <afonso@mail.com>
+//
+// SecurityDefinitions:
+//   api_key:
+//     type: apiKey
+//     name: Authorization
+//     in: header
 //
 // Consumes:
 // - application/json
@@ -21,7 +27,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"strconv"
 
 	"github.com/gin-contrib/sessions"
 	redisStore "github.com/gin-contrib/sessions/redis"
@@ -58,16 +63,16 @@ func init() {
 		DB:       0,
 	})
 
-	authCookieEnabled, _ := strconv.ParseBool(os.Getenv("AUTH_COOKIE_ENABLED"))
+	authMechanism := os.Getenv("AUTH_MECHANISM")
 
-	authHandler = handlers.NewAuthHandler(ctx, usersCol, authCookieEnabled)
+	authHandler = handlers.NewAuthHandler(ctx, usersCol, authMechanism)
 	recipesHandler = handlers.NewRecipesHandler(ctx, recipesCol, redisClient)
 }
 
 func main() {
 	router := gin.Default()
 
-	if authHandler.AuthCookieEnabled {
+	if authHandler.AuthMechanism == "COOKIE" {
 		store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
 		router.Use(sessions.Sessions("recipe_api", store))
 	}
@@ -76,7 +81,7 @@ func main() {
 	router.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
 	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
 
-	if authHandler.AuthCookieEnabled {
+	if authHandler.AuthMechanism == "COOKIE" {
 		router.POST("/signin", authHandler.SignInWithCookieHandler)
 		router.POST("/signout", authHandler.SignOutHandler)
 	} else {
@@ -91,5 +96,5 @@ func main() {
 	authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipesHandler)
 	authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipesHandler)
 
-	router.Run()
+	router.RunTLS(":4430", "certs/localhost.crt", "certs/localhost.key")
 }

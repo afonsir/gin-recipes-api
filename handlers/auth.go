@@ -7,20 +7,22 @@ import (
 	"os"
 	"time"
 
+	"github.com/auth0-community/go-auth0"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 	"github.com/rs/xid"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"gopkg.in/square/go-jose.v2"
 
 	models "github.com/afonsir/gin-recipes-api/models"
 )
 
 type AuthHandler struct {
-	collection        *mongo.Collection
-	ctx               context.Context
-	AuthCookieEnabled bool
+	collection    *mongo.Collection
+	ctx           context.Context
+	AuthMechanism string
 }
 
 type Claims struct {
@@ -36,18 +38,19 @@ type JWTOutput struct {
 func NewAuthHandler(
 	ctx context.Context,
 	collection *mongo.Collection,
-	authCookieEnabled bool,
+	authCookieEnabled string,
 ) *AuthHandler {
 	return &AuthHandler{
-		collection:        collection,
-		ctx:               ctx,
-		AuthCookieEnabled: authCookieEnabled,
+		collection:    collection,
+		ctx:           ctx,
+		AuthMechanism: authCookieEnabled,
 	}
 }
 
 func (handler *AuthHandler) AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if handler.AuthCookieEnabled {
+		switch handler.AuthMechanism {
+		case "COOKIE":
 			session := sessions.Default(c)
 			sessionToken := session.Get("token")
 
@@ -59,7 +62,7 @@ func (handler *AuthHandler) AuthMiddleware() gin.HandlerFunc {
 			}
 
 			c.Next()
-		} else {
+		case "JWT":
 			tokenValue := c.GetHeader("Authorization")
 			claims := &Claims{}
 
@@ -74,6 +77,33 @@ func (handler *AuthHandler) AuthMiddleware() gin.HandlerFunc {
 
 			if tkn == nil || !tkn.Valid {
 				c.AbortWithStatus(http.StatusUnauthorized)
+			}
+
+			c.Next()
+		case "AUTH0":
+			var auth0Domain = "https://" + os.Getenv("AUTH0_DOMAIN") + "/"
+
+			client := auth0.NewJWKClient(auth0.JWKClientOptions{
+				URI: auth0Domain + ".well-known/jwks.json"},
+				nil,
+			)
+
+			configuration := auth0.NewConfiguration(
+				client,
+				[]string{os.Getenv("AUTH0_API_IDENTIFIER")},
+				auth0Domain,
+				jose.RS256,
+			)
+
+			validator := auth0.NewValidator(configuration, nil)
+			_, err := validator.ValidateRequest(c.Request)
+
+			if err != nil {
+				c.JSON(http.StatusUnauthorized, gin.H{
+					"message": "Invalid token",
+				})
+				c.Abort()
+				return
 			}
 
 			c.Next()
