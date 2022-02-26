@@ -27,7 +27,9 @@ import (
 	"context"
 	"log"
 	"os"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/sessions"
 	redisStore "github.com/gin-contrib/sessions/redis"
 	"github.com/gin-gonic/gin"
@@ -41,6 +43,7 @@ import (
 
 var authHandler *handlers.AuthHandler
 var recipesHandler *handlers.RecipesHandler
+var originURL string
 
 func init() {
 	ctx := context.Background()
@@ -67,10 +70,21 @@ func init() {
 
 	authHandler = handlers.NewAuthHandler(ctx, usersCol, authMechanism)
 	recipesHandler = handlers.NewRecipesHandler(ctx, recipesCol, redisClient)
+
+	originURL = os.Getenv("ORIGIN_URL")
 }
 
 func main() {
 	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{originURL},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	if authHandler.AuthMechanism == "COOKIE" {
 		store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
