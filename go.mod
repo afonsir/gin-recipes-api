@@ -4,6 +4,7 @@ go 1.17
 
 require (
 	github.com/auth0-community/go-auth0 v1.0.0
+	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-contrib/sessions v0.0.4
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-redis/redis v6.15.9+incompatible
