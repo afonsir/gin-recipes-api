@@ -110,5 +110,11 @@ func main() {
 	authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipesHandler)
 	authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipesHandler)
 
-	router.RunTLS(":4430", "certs/localhost.crt", "certs/localhost.key")
+	appEnv := os.Getenv("APP_ENV")
+
+	if appEnv == "production" {
+		router.RunTLS(":4430", "certs/localhost.crt", "certs/localhost.key")
+	} else {
+		router.Run()
+	}
 }
