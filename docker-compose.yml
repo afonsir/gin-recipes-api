@@ -36,5 +36,23 @@ services:
     ports:
       - 8001:8001
 
+  rabbitmq:
+    container_name: rabbitmq
+    image: heidiks/rabbitmq-delayed-message-exchange:3.9.7-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "--quiet", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
 volumes:
   mongodb-data:
+  rabbitmq-data:
