@@ -53,6 +53,14 @@ services:
       timeout: 10s
       retries: 5
 
+  worker:
+    image: rss-parser-consumer
+    environment:
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DATABASE: ${MONGODB_DATABASE}
+      RABBITMQ_URI: ${RABBITMQ_URI}
+      RABBITMQ_QUEUE: ${RABBITMQ_QUEUE}
+
 volumes:
   mongodb-data:
   rabbitmq-data:
