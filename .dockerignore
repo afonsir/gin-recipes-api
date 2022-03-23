@@ -1,0 +1,10 @@
+/.git
+/benchmark
+/certs
+/conf
+/images
+.env*
+.gitignore
+docker-compose.yml
+Dockerfile
+*.json
