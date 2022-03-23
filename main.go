@@ -26,7 +26,9 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -91,6 +93,7 @@ func main() {
 		router.Use(sessions.Sessions("recipe_api", store))
 	}
 
+	router.GET("/illustration", IllustrationHandler)
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 	router.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
 	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
@@ -117,4 +120,18 @@ func main() {
 	} else {
 		router.Run()
 	}
+}
+
+func IllustrationHandler(c *gin.Context) {
+	c.Header("Etag", "illustration")
+	c.Header("Cache-Control", "max-age=2592000")
+
+	if match := c.GetHeader("If-None-Match"); match != "" {
+		if strings.Contains(match, "illustration") {
+			c.Writer.WriteHeader(http.StatusNotModified)
+			return
+		}
+	}
+
+	c.File("images/illustration.png")
 }
