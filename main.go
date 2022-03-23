@@ -61,7 +61,7 @@ func init() {
 	usersCol := client.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_URL"),
 		Password: "",
 		DB:       0,
 	})
@@ -87,7 +87,7 @@ func main() {
 	}))
 
 	if authHandler.AuthMechanism == "COOKIE" {
-		store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+		store, _ := redisStore.NewStore(10, "tcp", os.Getenv("REDIS_URL"), "", []byte("secret"))
 		router.Use(sessions.Sessions("recipe_api", store))
 	}
 
@@ -110,9 +110,9 @@ func main() {
 	authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipesHandler)
 	authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipesHandler)
 
-	appEnv := os.Getenv("APP_ENV")
+	appEnv := os.Getenv("GIN_RELEASE")
 
-	if appEnv == "production" {
+	if appEnv == "release" {
 		router.RunTLS(":4430", "certs/localhost.crt", "certs/localhost.key")
 	} else {
 		router.Run()
