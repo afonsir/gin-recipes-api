@@ -25,19 +25,31 @@ swagger serve --flavor swagger ./swagger.json
 - JWT auth mechanism:
 
 ```bash
-AUTH_MECHANISM='JWT' JWT_SECRET='<TOKEN>' MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' MONGODB_DATABASE=demo go run *.go
+AUTH_MECHANISM='JWT' \
+JWT_SECRET='<TOKEN>' \
+MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' \
+MONGODB_DATABASE=demo \
+go run *.go
 ```
 
 - Cookie auth mechanism:
 
 ```bash
-AUTH_MECHANISM='COOKIE' MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' MONGODB_DATABASE=demo go run *.go
+AUTH_MECHANISM='COOKIE' \
+MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' \
+MONGODB_DATABASE=demo \
+go run *.go
 ```
 
 - Auth0 auth mechanism:
 
 ```bash
-AUTH_MECHANISM='AUTH0' AUTH0_DOMAIN='<AUTH0_DOMAIN>' AUTH0_API_IDENTIFIER='<AUTH0_API_ID>' MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' MONGODB_DATABASE=demo go run *.go
+AUTH_MECHANISM='AUTH0' \
+AUTH0_DOMAIN='<AUTH0_DOMAIN>' \
+AUTH0_API_IDENTIFIER='<AUTH0_API_ID>' \
+MONGODB_URI='mongodb://<USER>:<PASSWORD>@localhost:27017/test?authSource=admin' \
+MONGODB_DATABASE=demo \
+go run *.go
 ```
 
 # Healthcheck
