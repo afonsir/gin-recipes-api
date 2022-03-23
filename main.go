@@ -26,7 +26,9 @@ package main
 import (
 	"context"
 	"log"
+	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -61,7 +63,7 @@ func init() {
 	usersCol := client.Database(os.Getenv("MONGODB_DATABASE")).Collection("users")
 
 	redisClient := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     os.Getenv("REDIS_URL"),
 		Password: "",
 		DB:       0,
 	})
@@ -87,10 +89,11 @@ func main() {
 	}))
 
 	if authHandler.AuthMechanism == "COOKIE" {
-		store, _ := redisStore.NewStore(10, "tcp", "localhost:6379", "", []byte("secret"))
+		store, _ := redisStore.NewStore(10, "tcp", os.Getenv("REDIS_URL"), "", []byte("secret"))
 		router.Use(sessions.Sessions("recipe_api", store))
 	}
 
+	router.GET("/illustration", IllustrationHandler)
 	router.GET("/recipes", recipesHandler.ListRecipesHandler)
 	router.GET("/recipes/:id", recipesHandler.GetOneRecipeHandler)
 	router.GET("/recipes/search", recipesHandler.SearchRecipesHandler)
@@ -110,11 +113,25 @@ func main() {
 	authorized.PUT("/recipes/:id", recipesHandler.UpdateRecipesHandler)
 	authorized.DELETE("/recipes/:id", recipesHandler.DeleteRecipesHandler)
 
-	appEnv := os.Getenv("APP_ENV")
+	appEnv := os.Getenv("GIN_RELEASE")
 
-	if appEnv == "production" {
+	if appEnv == "release" {
 		router.RunTLS(":4430", "certs/localhost.crt", "certs/localhost.key")
 	} else {
 		router.Run()
 	}
+}
+
+func IllustrationHandler(c *gin.Context) {
+	c.Header("Etag", "illustration")
+	c.Header("Cache-Control", "max-age=2592000")
+
+	if match := c.GetHeader("If-None-Match"); match != "" {
+		if strings.Contains(match, "illustration") {
+			c.Writer.WriteHeader(http.StatusNotModified)
+			return
+		}
+	}
+
+	c.File("images/illustration.png")
 }
